@@ -20,7 +20,7 @@ species_list <- species_list %>%
   dplyr::slice_head(n = 100)
 
 # Save species list used for the query to GBIF
-species_cube_file <- "./data/output/species_cube.csv"
+species_cube_file <- "./data/output/species_cube_first_100.csv"
 readr::write_csv(species_list, species_cube_file)
 
 
