@@ -1,0 +1,2 @@
+gbif_download_key	input_checklist	gbif_download_created	gbif_download_status	gbif_download_doi
+0027377-260208012135463	../build-eu-cube/data/output/species_cube.csv	2026-02-18T14:06:57.954+00:00	SUCCEEDED	https://doi.org/10.15468/dl.zm6egm
