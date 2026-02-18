@@ -17,12 +17,11 @@ species_list <- species_list %>%
 
 # Test with 100 species
 species_list <- species_list %>%
-  dplyr::slice_head(n = 100)
+  dplyr::slice_head(n = 4000)
 
 # Save species list used for the query to GBIF
-species_cube_file <- "./data/output/species_cube_first_100.csv"
+species_cube_file <- "./data/output/species_cube_first_4000.csv"
 readr::write_csv(species_list, species_cube_file)
-
 
 # Get wkt of the area of interest ####
 area_wkt_file <- "./data/output/lme_eu_borders_bbox.txt"
