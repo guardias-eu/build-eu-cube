@@ -109,7 +109,7 @@ d <- rgbif::occ_download_sql(
 )
 d
 
-metadata <- rgbif::occ_download_meta("0027536-260208012135463")
+metadata <- rgbif::occ_download_meta(d)
 
 trias::update_download_list(
   file = "./data/output/list_downloads.tsv",
