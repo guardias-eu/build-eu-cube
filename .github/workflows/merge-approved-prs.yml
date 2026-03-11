@@ -1,0 +1,66 @@
+name: Merge Approved PRs
+
+on:
+  schedule:
+    - cron: '0 3 * * *'  # Run at 3 AM UTC every night (after query workflow)
+  workflow_dispatch:  # Allow manual trigger
+
+jobs:
+  merge-approved:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      
+      - name: Find and merge approved PRs
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            // Get all open PRs with 'approved' label
+            const { data: prs } = await github.rest.pulls.list({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              state: 'open',
+              base: 'main'
+            });
+            
+            for (const pr of prs) {
+              // Check if PR has both 'automated' and 'approved' labels
+              const labels = pr.labels.map(label => label.name);
+              
+              if (labels.includes('approved') && labels.includes('automated')) {
+                console.log(`Merging PR #${pr.number}: ${pr.title}`);
+                
+                try {
+                  await github.rest.pulls.merge({
+                    owner: context.repo.owner,
+                    repo: context.repo.repo,
+                    pull_number: pr.number,
+                    merge_method: 'squash',
+                    commit_title: `${pr.title} (#${pr.number})`,
+                    commit_message: 'Automatically merged approved PR'
+                  });
+                  
+                  console.log(`Successfully merged PR #${pr.number}`);
+                  
+                  // Delete the branch after merging
+                  try {
+                    await github.rest.git.deleteRef({
+                      owner: context.repo.owner,
+                      repo: context.repo.repo,
+                      ref: `heads/${pr.head.ref}`
+                    });
+                    console.log(`Deleted branch ${pr.head.ref}`);
+                  } catch (error) {
+                    console.log(`Could not delete branch ${pr.head.ref}: ${error.message}`);
+                  }
+                } catch (error) {
+                  console.error(`Failed to merge PR #${pr.number}: ${error.message}`);
+                }
+              }
+            }
