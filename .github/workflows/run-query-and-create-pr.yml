@@ -23,6 +23,11 @@ jobs:
         with:
           r-version: 'release'
       
+      - name: Install Linux system dependencies for R packages
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libudunits2-dev libgdal-dev gdal-bin libpng-dev
+      
       - name: Install system dependencies
         run: |
           sudo apt-get update
@@ -83,7 +88,7 @@ jobs:
               title: 'Automated query update',
               head: '${{ steps.create_branch.outputs.branch_name }}',
               base: 'main',
-              body: 'This PR was automatically created by the nightly query run.\n\nGenerated from `build_run_query.R`.'
+              body: 'This PR was automatically created by the nightly (or event dispatch) query run.\n\nGenerated from `build_run_query.R`.'
             });
             
             // Add automated label
