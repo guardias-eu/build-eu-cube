@@ -2,3 +2,4 @@ gbif_download_key	input_checklist	gbif_download_created	gbif_download_status	gbi
 0000418-260225131425191	./data/output/species_cube_first_4000.csv	2026-02-25T16:43:29Z	SUCCEEDED	https://doi.org/10.15468/dl.53bfyp
 0027536-260208012135463	./data/output/species_cube_first_4000.csv	2026-02-18T15:26:02.818+00:00	SUCCEEDED	https://doi.org/10.15468/dl.9794tm
 0030326-260226173443078	/home/runner/work/build-eu-cube/build-eu-cube/data/output/species_cube_marine_oligohaline.csv	2026-03-11T21:27:32.883+00:00	PREPARING	https://doi.org/
+0030349-260226173443078	/home/runner/work/build-eu-cube/build-eu-cube/data/output/species_cube_marine_oligohaline.csv	2026-03-11T21:41:28.770+00:00	PREPARING	https://doi.org/
