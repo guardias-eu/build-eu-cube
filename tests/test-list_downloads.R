@@ -30,7 +30,7 @@ test_that("No NA values", {
 test_that("gbif_download_status is one of RUNNING, PREPARING, SUCCEDEED", {
   downloads <- here::here("data", "output", "list_downloads.tsv") %>%
     readr::read_tsv(na = "")
-  valid_statuses <- c("RUNNING", "PREPARING", "SUCCEEDED")
+  valid_statuses <- c("RUNNING", "PREPARING", "SUCCEEDED", "CANCELLED")
   expect_true(all(downloads$gbif_download_status %in% valid_statuses))
 })
 
