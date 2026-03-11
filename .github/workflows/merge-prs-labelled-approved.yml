@@ -1,4 +1,4 @@
-name: Merge Approved PRs
+name: Merge PRs with label "approved"
 
 on:
   schedule:
