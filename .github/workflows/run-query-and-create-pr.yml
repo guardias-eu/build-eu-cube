@@ -24,20 +24,23 @@ jobs:
           r-version: 'release'
           use-public-rspm: true
       
-      - name: Install system dependencies
+      - name: Get R library path
+        id: r-lib
         run: |
-          sudo apt-get update
-          sudo apt-get install -y libcurl4-openssl-dev libssl-dev libxml2-dev libudunits2-dev libgdal-dev gdal-bin libpng-dev
+          echo "path=$(Rscript -e 'cat(.libPaths()[1])')" >> $GITHUB_OUTPUT
       
       - name: Setup R dependencies cache
         uses: actions/cache@v4
         with:
-          path: |
-            ~/.local/share/renv
-            ~/R/library
+          path: ${{ steps.r-lib.outputs.path }}
           key: ${{ runner.os }}-r-${{ hashFiles('src/build_run_query.R', 'tests/test-list_downloads.R') }}
           restore-keys: |
             ${{ runner.os }}-r-
+      
+      - name: Install system dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libcurl4-openssl-dev libssl-dev libxml2-dev libudunits2-dev libgdal-dev gdal-bin libpng-dev
       
       - name: Install R dependencies
         env: 
