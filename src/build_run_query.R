@@ -1,7 +1,8 @@
-library(readr)
 library(dplyr)
-library(readr)
 library(glue)
+library(here)
+library(readr)
+library(reasin)
 library(rgbif)
 library(trias)
 
@@ -15,16 +16,17 @@ species_list <- species_list %>%
   dplyr::filter(status == "ACCEPTED") %>%
   dplyr::filter(rank == "SPECIES")
 
-# Test with 100 species
+# Filter species living in marine and oligohaline environments
+marine_species <- reasin::get_species(environment = c("MAR", "OLI"))
 species_list <- species_list %>%
-  dplyr::slice_head(n = 4000)
+  dplyr::filter(easin_EASINID %in% marine_species$EASINID)
 
 # Save species list used for the query to GBIF
-species_cube_file <- "./data/output/species_cube_first_4000.csv"
-readr::write_csv(species_list, species_cube_file)
+species_cube_file <- here::here("data", "output", "species_cube_marine_oligohaline.csv")
+readr::write_csv(species_list, species_cube_file, na = "")
 
 # Get wkt of the area of interest ####
-area_wkt_file <- "./data/output/lme_eu_borders_bbox.txt"
+area_wkt_file <- here::here("data", "output", "lme_eu_borders_bbox.txt")
 # Read the wkt from the file
 area_wkt <- readr::read_file(area_wkt_file)
 
@@ -106,8 +108,8 @@ d <- rgbif::occ_download_sql(
   validate = TRUE
 )
 d
-# d <- "0027377-260208012135463"
-metadata <- rgbif::occ_download_meta(d)
+
+metadata <- rgbif::occ_download_meta("0027536-260208012135463")
 
 trias::update_download_list(
   file = "./data/output/list_downloads.tsv",
