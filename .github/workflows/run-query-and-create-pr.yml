@@ -45,7 +45,7 @@ jobs:
         run: |
           install.packages(c('dplyr', 'glue', 'here', 'readr', 'rgbif', 'remotes', 'testthat'))
           remotes::install_github('trias-project/trias')
-          remotes::install_github('b-cubed-eu/reasin')
+          remotes::install_github('guardias-eu/reasin')
         shell: Rscript {0}
       
       - name: Run build_run_query.R
