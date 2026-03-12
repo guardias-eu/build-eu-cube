@@ -46,11 +46,34 @@ jobs:
         env: 
           GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          install.packages(c('dplyr', 'glue', 'here', 'readr', 'rgbif', 'remotes', 'testthat'))
+          install.packages(c('dplyr', 'glue', 'here', 'mregions2', 'readr', 'rgbif', 'remotes', 'testthat'))
           remotes::install_github('trias-project/trias')
           remotes::install_github('guardias-eu/reasin')
         shell: Rscript {0}
       
+      - name: Run get_large_marine_regions.R
+        run: Rscript src/get_large_marine_regions.R
+
+      - name: Test area WKT
+        id: test_area_wkt
+        run: |
+          Rscript -e "testthat::test_file('tests/test-area_wkt.R')"
+          echo "area_tests_passed=true" >> $GITHUB_OUTPUT
+
+      - name: Create issue on area test failure
+        if: failure() && steps.test_area_wkt.outcome == 'failure'
+        uses: actions/github-script@v8
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            await github.rest.issues.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              title: 'Area WKT tests failed in automated workflow',
+              body: `The area WKT validation tests failed during the automated workflow run.\n\n**Workflow run:** ${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}\n\nPlease review the test failures in \`tests/test-area_wkt.R\` and the output from \`src/get_large_marine_regions.R\`.`,
+              labels: ['bug', 'automated']
+            });
+
       - name: Run build_run_query.R
         env:
           GBIF_USER: ${{ secrets.GBIF_USER }}
@@ -111,7 +134,7 @@ jobs:
             core.setOutput('pr_number', pr.number);
             return pr.number;
       
-      - name: Run tests
+      - name: Run tests downloads
         if: steps.check_changes.outputs.has_changes == 'true'
         id: run_tests
         run: |
@@ -129,4 +152,21 @@ jobs:
               repo: context.repo.repo,
               issue_number: ${{ steps.create_pr.outputs.result }},
               labels: ['approved']
+            });
+      
+      - name: Create issue on download list test failure
+        if: steps.check_changes.outputs.has_changes == 'true' && steps.run_tests.outcome == 'failure'
+        uses: actions/github-script@v8
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const prNumber = ${{ steps.create_pr.outputs.result }};
+            const branchName = '${{ steps.create_branch.outputs.branch_name }}';
+            
+            await github.rest.issues.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              title: 'Download list tests failed in automated workflow',
+              body: `The download list validation tests failed during the automated workflow run.\n\n**Workflow run:** ${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}\n**Pull Request:** #${prNumber}\n\n**Files to review:**\n- [tests/test-list_downloads.R](${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/blob/${branchName}/tests/test-list_downloads.R)\n- [data/output/list_downloads.tsv](${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/blob/${branchName}/data/output/list_downloads.tsv)\n\nPlease review the test failures and the download metadata in the PR branch.`,
+              labels: ['bug', 'automated']
             });
