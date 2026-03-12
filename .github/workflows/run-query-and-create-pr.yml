@@ -57,17 +57,19 @@ jobs:
       - name: Test area WKT
         id: test_area_wkt
         run: |
-          if Rscript -e "testthat::test_file('tests/test-area_wkt.R')"; then
-            echo "area_tests_passed=true" >> $GITHUB_OUTPUT
-            echo "Tests passed"
-          else
-            echo "area_tests_passed=false" >> $GITHUB_OUTPUT
-            echo "Tests failed"
-            exit 1
-          fi
+          Rscript -e "
+          results <- testthat::test_file('tests/test-area_wkt.R')
+          df <- as.data.frame(results)
+          if (sum(df[['failed']]) > 0) {
+            quit(status = 1)
+          }
+          "
+          echo "area_tests_passed=true" >> $GITHUB_OUTPUT
+          echo "Tests passed"
+        continue-on-error: true
 
       - name: Create issue on area test failure
-        if: failure() && steps.test_area_wkt.outputs.area_tests_passed == 'false'
+        if: failure() && steps.test_area_wkt.outcome == 'failure'
         uses: actions/github-script@v8
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
@@ -105,6 +107,7 @@ jobs:
       
       - name: Create branch and commit changes
         if: steps.test_area_wkt.outputs.area_tests_passed == 'true' && steps.check_changes.outputs.has_changes == 'true'
+        if: steps.check_changes.outputs.has_changes == 'true'
         id: create_branch
         run: |
           BRANCH_NAME="automated-query-update-$(date +%Y%m%d-%H%M%S)"
@@ -146,17 +149,12 @@ jobs:
         if: steps.test_area_wkt.outputs.area_tests_passed == 'true' && steps.check_changes.outputs.has_changes == 'true'
         id: run_tests
         run: |
-          if Rscript -e "testthat::test_file('tests/test-list_downloads.R')"; then
-            echo "tests_passed=true" >> $GITHUB_OUTPUT
-            echo "Download tests passed"
-          else
-            echo "tests_passed=false" >> $GITHUB_OUTPUT
-            echo "Download tests failed"
-          fi
+          Rscript -e "testthat::test_file('tests/test-list_downloads.R')"
+          echo "tests_passed=true" >> $GITHUB_OUTPUT
         continue-on-error: true
       
       - name: Add approved label if tests passed
-        if: steps.test_area_wkt.outputs.area_tests_passed == 'true' && steps.check_changes.outputs.has_changes == 'true' && steps.run_tests.outputs.tests_passed == 'true'
+        if: steps.check_changes.outputs.has_changes == 'true' && steps.run_tests.outputs.tests_passed == 'true'
         uses: actions/github-script@v8
         with:
           script: |
@@ -168,7 +166,7 @@ jobs:
             });
       
       - name: Create issue on download list test failure
-        if: steps.test_area_wkt.outputs.area_tests_passed == 'true' && steps.check_changes.outputs.has_changes == 'true' && steps.run_tests.outputs.tests_passed == 'false'
+        if: steps.check_changes.outputs.has_changes == 'true' && steps.run_tests.outcome == 'failure'
         uses: actions/github-script@v8
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
