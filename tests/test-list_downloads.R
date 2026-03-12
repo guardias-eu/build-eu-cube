@@ -18,7 +18,7 @@ test_that("list_downloads returns a data frame with expected columns", {
   expect_true(class(downloads$input_checklist) == "character")
   expect_identical(class(downloads$gbif_download_created), c("POSIXct", "POSIXt"))
   expect_true(class(downloads$gbif_download_status) == "character")
-  expect_true(class(downloads$gbif_download_doi) == "character")
+  expect_true(class(downloads$gbif_download_doi) == "charact")
 })
 
 test_that("No NA values", {
