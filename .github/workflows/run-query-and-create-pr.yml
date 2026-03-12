@@ -107,7 +107,6 @@ jobs:
       
       - name: Create branch and commit changes
         if: steps.test_area_wkt.outputs.area_tests_passed == 'true' && steps.check_changes.outputs.has_changes == 'true'
-        if: steps.check_changes.outputs.has_changes == 'true'
         id: create_branch
         run: |
           BRANCH_NAME="automated-query-update-$(date +%Y%m%d-%H%M%S)"
