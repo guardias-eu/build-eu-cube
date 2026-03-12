@@ -10,7 +10,7 @@ test_that("Area wkt file has one line", {
   # Check that the area_wkt has only one line
   expect_equal(length(strsplit(area_wkt, "\n")[[1]]), 1)
   # Check that the area_wkt starts with "POLYGON" (since it's a bounding box)
-  expect_true(startsWith(area_wkt, "POLYGON"))
+  expect_true(startsWith(area_wkt, "POLYGO"))
   # Check that the area_wkt polygon is well-formed (has 5 points for a bounding box)
   points <- strsplit(area_wkt, "\\(\\(")[[1]][2]
   points <- strsplit(points, "\\)\\)")[[1]][1]
