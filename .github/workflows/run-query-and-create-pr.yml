@@ -160,18 +160,6 @@ jobs:
           echo "Download tests passed"
         continue-on-error: true
       
-      - name: Add approved label if tests passed
-        if: steps.check_changes.outputs.has_changes == 'true' && steps.run_tests.outputs.tests_passed == 'true'
-        uses: actions/github-script@v8
-        with:
-          script: |
-            await github.rest.issues.addLabels({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              issue_number: ${{ steps.create_pr.outputs.result }},
-              labels: ['approved']
-            });
-      
       - name: Create issue on download list test failure
         if: steps.check_changes.outputs.has_changes == 'true' && steps.run_tests.outcome == 'failure'
         uses: actions/github-script@v8
@@ -187,4 +175,16 @@ jobs:
               title: 'Download list tests failed in automated workflow',
               body: `The download list validation tests failed during the automated workflow run.\n\n**Workflow run:** ${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}\n**Pull Request:** #${prNumber}\n\n**Files to review:**\n- [tests/test-list_downloads.R](${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/blob/${branchName}/tests/test-list_downloads.R)\n- [data/output/list_downloads.tsv](${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/blob/${branchName}/data/output/list_downloads.tsv)\n\nPlease review the test failures and the download metadata in the PR branch.`,
               labels: ['bug', 'automated']
+            });
+      
+      - name: Add approved label if tests passed
+        if: steps.check_changes.outputs.has_changes == 'true' && steps.run_tests.outputs.tests_passed == 'true'
+        uses: actions/github-script@v8
+        with:
+          script: |
+            await github.rest.issues.addLabels({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: ${{ steps.create_pr.outputs.result }},
+              labels: ['approved']
             });
