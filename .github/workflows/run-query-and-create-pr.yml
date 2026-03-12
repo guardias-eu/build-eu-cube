@@ -59,9 +59,10 @@ jobs:
         run: |
           Rscript -e "testthat::test_file('tests/test-area_wkt.R')"
           echo "area_tests_passed=true" >> $GITHUB_OUTPUT
+        continue-on-error: true
 
       - name: Create issue on area test failure
-        if: failure() && steps.test_area_wkt.outcome == 'failure'
+        if: always() && steps.test_area_wkt.outcome == 'failure'
         uses: actions/github-script@v8
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
@@ -75,6 +76,7 @@ jobs:
             });
 
       - name: Run build_run_query.R
+        if: steps.test_area_wkt.outputs.area_tests_passed == 'true'
         env:
           GBIF_USER: ${{ secrets.GBIF_USER }}
           GBIF_PWD: ${{ secrets.GBIF_PWD }}
@@ -82,6 +84,7 @@ jobs:
         run: Rscript src/build_run_query.R
       
       - name: Check for changes
+        if: steps.test_area_wkt.outputs.area_tests_passed == 'true'
         id: check_changes
         run: |
           git config user.name "github-actions[bot]"
@@ -96,7 +99,7 @@ jobs:
           fi
       
       - name: Create branch and commit changes
-        if: steps.check_changes.outputs.has_changes == 'true'
+        if: steps.test_area_wkt.outputs.area_tests_passed == 'true' && steps.check_changes.outputs.has_changes == 'true'
         id: create_branch
         run: |
           BRANCH_NAME="automated-query-update-$(date +%Y%m%d-%H%M%S)"
@@ -108,7 +111,7 @@ jobs:
           git push origin "$BRANCH_NAME"
       
       - name: Create Pull Request
-        if: steps.check_changes.outputs.has_changes == 'true'
+        if: steps.test_area_wkt.outputs.area_tests_passed == 'true' && steps.check_changes.outputs.has_changes == 'true'
         id: create_pr
         uses: actions/github-script@v8
         with:
@@ -135,7 +138,7 @@ jobs:
             return pr.number;
       
       - name: Run tests downloads
-        if: steps.check_changes.outputs.has_changes == 'true'
+        if: steps.test_area_wkt.outputs.area_tests_passed == 'true' && steps.check_changes.outputs.has_changes == 'true'
         id: run_tests
         run: |
           Rscript -e "testthat::test_file('tests/test-list_downloads.R')"
@@ -143,7 +146,7 @@ jobs:
         continue-on-error: true
       
       - name: Add approved label if tests passed
-        if: steps.check_changes.outputs.has_changes == 'true' && steps.run_tests.outputs.tests_passed == 'true'
+        if: steps.test_area_wkt.outputs.area_tests_passed == 'true' && steps.check_changes.outputs.has_changes == 'true' && steps.run_tests.outputs.tests_passed == 'true'
         uses: actions/github-script@v8
         with:
           script: |
@@ -155,7 +158,7 @@ jobs:
             });
       
       - name: Create issue on download list test failure
-        if: steps.check_changes.outputs.has_changes == 'true' && steps.run_tests.outcome == 'failure'
+        if: steps.test_area_wkt.outputs.area_tests_passed == 'true' && steps.check_changes.outputs.has_changes == 'true' && steps.run_tests.outcome == 'failure'
         uses: actions/github-script@v8
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
