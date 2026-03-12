@@ -149,8 +149,15 @@ jobs:
         if: steps.test_area_wkt.outputs.area_tests_passed == 'true' && steps.check_changes.outputs.has_changes == 'true'
         id: run_tests
         run: |
-          Rscript -e "testthat::test_file('tests/test-list_downloads.R')"
+          Rscript -e "
+          results <- testthat::test_file('tests/test-list_downloads.R')
+          df <- as.data.frame(results)
+          if (sum(df[['failed']]) > 0) {
+            quit(status = 1)
+          }
+          "
           echo "tests_passed=true" >> $GITHUB_OUTPUT
+          echo "Download tests passed"
         continue-on-error: true
       
       - name: Add approved label if tests passed
