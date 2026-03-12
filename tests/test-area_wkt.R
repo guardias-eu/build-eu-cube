@@ -1,7 +1,8 @@
 library(testthat)
+library(here)
 
 test_that("Area wkt file has one line", {
-  area_wkt_file <- "data/output/lme_eu_borders_bbox.txt"
+  area_wkt_file <- here::here("data", "output", "lme_eu_borders_bbox.txt")
   
   # Read the wkt from the file
   area_wkt <- readr::read_file(area_wkt_file)
