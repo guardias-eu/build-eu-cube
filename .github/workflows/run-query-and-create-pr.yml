@@ -2,7 +2,7 @@ name: Run Query and Create PR
 
 on:
   schedule:
-    - cron: '0 2 * * *'  # Run at 2 AM UTC every night
+    - cron: '0 3 * * MON'  # Run at 2 AM UTC every Monday night
   workflow_dispatch:  # Allow manual trigger
 
 jobs:

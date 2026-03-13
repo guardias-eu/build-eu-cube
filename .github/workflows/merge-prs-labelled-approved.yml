@@ -2,7 +2,7 @@ name: Merge PRs with label "approved"
 
 on:
   schedule:
-    - cron: '0 3 * * *'  # Run at 3 AM UTC every night (after query workflow)
+    - cron: '0 3 * * MON'  # Run at 3 AM UTC every Monday night (after query workflow)
   workflow_dispatch:  # Allow manual trigger
 
 jobs:
