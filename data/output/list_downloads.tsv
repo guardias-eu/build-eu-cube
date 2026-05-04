@@ -14,4 +14,5 @@ gbif_download_key	input_checklist	gbif_download_created	gbif_download_status	gbi
 0092431-260226173443078	/home/runner/work/build-eu-cube/build-eu-cube/data/output/species_cube_marine_oligohaline.csv	2026-04-06T03:57:25Z	SUCCEEDED	https://doi.org/
 0009557-260409193756587	/home/runner/work/build-eu-cube/build-eu-cube/data/output/species_cube_marine_oligohaline.csv	2026-04-13T04:20:16Z	SUCCEEDED	https://doi.org/
 0033152-260409193756587	/home/runner/work/build-eu-cube/build-eu-cube/data/output/species_cube_marine_oligohaline.csv	2026-04-20T04:19:39Z	SUCCEEDED	https://doi.org/
-0009815-260423192947929	/home/runner/work/build-eu-cube/build-eu-cube/data/output/species_cube_marine_oligohaline.csv	2026-04-27T04:30:54Z	PREPARING	https://doi.org/
+0009815-260423192947929	/home/runner/work/build-eu-cube/build-eu-cube/data/output/species_cube_marine_oligohaline.csv	2026-04-27T04:30:54Z	SUCCEEDED	https://doi.org/
+0006165-260430073515954	/home/runner/work/build-eu-cube/build-eu-cube/data/output/species_cube_marine_oligohaline.csv	2026-05-04T04:40:26Z	PREPARING	https://doi.org/
