@@ -11,16 +11,9 @@ species_file <- "https://raw.githubusercontent.com/guardias-eu/easin-gbif-taxa-m
 # Read the species list from the file
 species_list <- readr::read_csv(species_file, na = "", guess_max = 10000)
 
-# Get synonyms with exact match whose accepted taxon is a species
-synonyms <- species_list %>%
-  dplyr::filter(rank == "SPECIES") %>%
-  dplyr::filter(matchType == "EXACT") %>%
-  dplyr::filter(!is.na(acceptedUsageKey) & acceptedUsageKey == speciesKey)
-
 # Select accepted species with exact match or synonyms with exact match whose accepted taxon is a species
 species_list <- species_list %>%
-  dplyr::filter(matchType == "EXACT")
-species_list <- species_list %>%
+  dplyr::filter(matchType == "EXACT") %>%
   dplyr::filter(rank == "SPECIES" & status == "ACCEPTED" | status == "SYNONYM" & acceptedUsageKey == speciesKey)
   
 # Filter species living in marine and oligohaline environments
