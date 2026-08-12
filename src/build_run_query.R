@@ -93,7 +93,7 @@ sql_query <- "
 
 query_filled <- glue::glue(
   sql_query,
-  species_keys = paste(species_list$speciesKey, collapse = ", "),
+  species_keys = paste(glue::single_quote(species_list$speciesKey), collapse = ", "),
   area_wkt = area_wkt
 )
 
