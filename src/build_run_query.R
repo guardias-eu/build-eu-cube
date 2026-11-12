@@ -50,7 +50,7 @@ sql_query <- "
   FROM
     occurrence
   WHERE 
-    occurrenceStatus = 'PRESENT'
+    occurrenceStatus IN ('PRESENT', 'DETECTED')
     AND NOT occurrence.basisofrecord IN ('FOSSIL_SPECIMEN', 'LIVING_SPECIMEN')
     AND speciesKey IN ({species_keys})
     AND speciesKey IS NOT NULL
